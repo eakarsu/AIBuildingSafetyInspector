@@ -42,6 +42,10 @@ export default function Sidebar({ open, onToggle, user, onLogout }) {
           <span className="nav-icon">🔔</span>
           {open && 'Webhooks'}
         </NavLink>
+        <NavLink to="/custom-views" className={({ isActive }) => isActive ? 'active' : ''}>
+          <span className="nav-icon">🗺️</span>
+          {open && 'Inspector Views'}
+        </NavLink>
       </nav>
       <div className="sidebar-user">
         <div className="user-avatar">{initials}</div>

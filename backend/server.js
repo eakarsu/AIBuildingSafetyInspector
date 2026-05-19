@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const rateLimit = require('express-rate-limit');
+const { rateLimit, ipKeyGenerator } = require('express-rate-limit');
 require('dotenv').config({ path: '../.env' });
 
 const app = express();
@@ -15,9 +15,9 @@ const aiRateLimiter = rateLimit({
   max: 20,
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => {
-    // Key by user JWT (set by auth middleware) or fallback to IP
-    return req.user ? String(req.user.id) : req.ip;
+  keyGenerator: (req, res) => {
+    // Key by user JWT (set by auth middleware) or fallback to IP (IPv6-safe)
+    return req.user ? String(req.user.id) : ipKeyGenerator(req.ip);
   },
   message: { error: 'Too many AI requests. You are limited to 20 per hour. Please try again later.' }
 });
@@ -61,6 +61,8 @@ app.use('/api/osha-code-rag', require('./routes/oshaCodeRag')); // apply pass 6 
 app.use('/api/wearable-safety-stream', require('./routes/wearableSafetyStream')); // apply pass 6 — audit custom suggestion
 
 app.use('/api/consultancy-white-label', require('./routes/consultancyWhiteLabel')); // apply pass 6 — audit custom suggestion
+
+app.use('/api/custom-views', require('./routes/customViews'));
 app.listen(PORT, () => {
   console.log(`Backend server running on port ${PORT}`);
 });

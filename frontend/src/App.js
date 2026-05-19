@@ -10,6 +10,7 @@ import FeaturePage from './components/FeaturePage';
 import AIAnalysis from './components/AIAnalysis';
 import Analytics from './components/Analytics';
 import Webhooks from './components/Webhooks';
+import CustomViewsPage from './components/CustomViewsPage';
 import { featureConfigs } from './config/features';
 
 function App() {
@@ -57,6 +58,7 @@ function App() {
             <Route path="/ai-analysis" element={<AIAnalysis token={token} user={user} />} />
             <Route path="/analytics" element={<Analytics token={token} />} />
             <Route path="/webhooks" element={<Webhooks token={token} />} />
+            <Route path="/custom-views" element={<CustomViewsPage token={token} />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </main>
