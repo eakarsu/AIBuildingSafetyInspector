@@ -1,0 +1,104 @@
+{
+  "project": "AIBuildingSafetyInspector",
+  "marker": "// === Batch 01 Gaps & Frontend Mounts ===",
+  "features": [
+    {
+      "slug": "agentic-safety-inspector-orchestrating-site-walk-p",
+      "component": "AgenticSafetyInspectorOrchestratingSiteWalkPPage",
+      "label": "Agentic safety inspector orchestrating site walk, photo capture, code lookup, and corrective dispatch",
+      "endpoint": "/api/cf-agentic-safety-inspector-orchestrating-site-walk-p",
+      "kind": "cfs"
+    },
+    {
+      "slug": "rag-over-osha-standards-local-codes-and-project-sp",
+      "component": "RagOverOshaStandardsLocalCodesAndProjectSpPage",
+      "label": "RAG over OSHA standards, local codes, and project specs with cited findings",
+      "endpoint": "/api/cf-rag-over-osha-standards-local-codes-and-project-sp",
+      "kind": "cfs"
+    },
+    {
+      "slug": "real-time-stream-from-wearables-iot-triggering-ins",
+      "component": "RealTimeStreamFromWearablesIotTriggeringInsPage",
+      "label": "Real-time stream from wearables/IoT triggering instant safety bulletins",
+      "endpoint": "/api/cf-real-time-stream-from-wearables-iot-triggering-ins",
+      "kind": "cfs"
+    },
+    {
+      "slug": "white-label-deployment-for-safety-consulting-firms",
+      "component": "WhiteLabelDeploymentForSafetyConsultingFirmsPage",
+      "label": "White-label deployment for safety consulting firms managing multiple clients",
+      "endpoint": "/api/cf-white-label-deployment-for-safety-consulting-firms",
+      "kind": "cfs"
+    },
+    {
+      "slug": "no-video-cctv-stream-analytics-only-photo-analysis",
+      "component": "NoVideoCctvStreamAnalyticsOnlyPhotoAnalysisPage",
+      "label": "No video/CCTV stream analytics (only photo analysis)",
+      "endpoint": "/api/gap-no-video-cctv-stream-analytics-only-photo-analysis",
+      "kind": "gap"
+    },
+    {
+      "slug": "no-ai-checklist-generator-from-local-building-code",
+      "component": "NoAiChecklistGeneratorFromLocalBuildingCodePage",
+      "label": "No AI checklist generator from local building codes",
+      "endpoint": "/api/gap-no-ai-checklist-generator-from-local-building-code",
+      "kind": "gap"
+    },
+    {
+      "slug": "no-drone-footage-inspection-ingestion",
+      "component": "NoDroneFootageInspectionIngestionPage",
+      "label": "No drone-footage inspection ingestion",
+      "endpoint": "/api/gap-no-drone-footage-inspection-ingestion",
+      "kind": "gap"
+    },
+    {
+      "slug": "no-ai-training-content-generator-from-incidents",
+      "component": "NoAiTrainingContentGeneratorFromIncidentsPage",
+      "label": "No AI training-content generator from incidents",
+      "endpoint": "/api/gap-no-ai-training-content-generator-from-incidents",
+      "kind": "gap"
+    },
+    {
+      "slug": "frontend-pages-folder-is-empty-no-spa-ui-shipped",
+      "component": "FrontendPagesFolderIsEmptyNoSpaUiShippedPage",
+      "label": "Frontend pages folder is empty \u2014 no SPA UI shipped",
+      "endpoint": "/api/gap-frontend-pages-folder-is-empty-no-spa-ui-shipped",
+      "kind": "gap"
+    },
+    {
+      "slug": "notification-routes-exist-but-no-sms-push-delivery",
+      "component": "NotificationRoutesExistButNoSmsPushDeliveryPage",
+      "label": "Notification routes exist but no SMS/push delivery channel",
+      "endpoint": "/api/gap-notification-routes-exist-but-no-sms-push-delivery",
+      "kind": "gap"
+    },
+    {
+      "slug": "no-direct-gc-platform-api-client-procore-plangrid",
+      "component": "NoDirectGcPlatformApiClientProcorePlangridPage",
+      "label": "No direct GC-platform API client (Procore, PlanGrid)",
+      "endpoint": "/api/gap-no-direct-gc-platform-api-client-procore-plangrid",
+      "kind": "gap"
+    },
+    {
+      "slug": "no-qr-code-site-asset-tagging",
+      "component": "NoQrCodeSiteAssetTaggingPage",
+      "label": "No QR-code site/asset tagging",
+      "endpoint": "/api/gap-no-qr-code-site-asset-tagging",
+      "kind": "gap"
+    },
+    {
+      "slug": "no-mobile-offline-mode-for-inspectors",
+      "component": "NoMobileOfflineModeForInspectorsPage",
+      "label": "No mobile-offline mode for inspectors",
+      "endpoint": "/api/gap-no-mobile-offline-mode-for-inspectors",
+      "kind": "gap"
+    },
+    {
+      "slug": "no-payroll-integrated-certification-expiry-alerts",
+      "component": "NoPayrollIntegratedCertificationExpiryAlertsPage",
+      "label": "No payroll-integrated certification expiry alerts",
+      "endpoint": "/api/gap-no-payroll-integrated-certification-expiry-alerts",
+      "kind": "gap"
+    }
+  ]
+}

@@ -27,10 +27,24 @@ export default function Sidebar({ open, onToggle, user, onLogout }) {
             {open && config.title}
           </NavLink>
         ))}
+        {open && <div className="nav-section">Insights</div>}
+        <NavLink to="/analytics" className={({ isActive }) => isActive ? 'active' : ''}>
+          <span className="nav-icon">📊</span>
+          {open && 'Compliance Analytics'}
+        </NavLink>
         {open && <div className="nav-section">AI Tools</div>}
         <NavLink to="/ai-analysis" className={({ isActive }) => isActive ? 'active' : ''}>
           <span className="nav-icon">🤖</span>
           {open && 'AI Analysis'}
+        </NavLink>
+        {open && <div className="nav-section">Integrations</div>}
+        <NavLink to="/webhooks" className={({ isActive }) => isActive ? 'active' : ''}>
+          <span className="nav-icon">🔔</span>
+          {open && 'Webhooks'}
+        </NavLink>
+        <NavLink to="/custom-views" className={({ isActive }) => isActive ? 'active' : ''}>
+          <span className="nav-icon">🗺️</span>
+          {open && 'Inspector Views'}
         </NavLink>
       </nav>
       <div className="sidebar-user">
