@@ -1,5 +1,43 @@
 export const featureConfigs = [
   {
+    key: 'permit-closeout-readiness',
+    path: '/permit-closeout-readiness',
+    title: 'Permit Closeout Readiness',
+    icon: '📑',
+    apiPath: '/api/permit-closeout-readiness',
+    tableColumns: [
+      { key: 'permit_number', label: 'Permit' },
+      { key: 'site_name', label: 'Site' },
+      { key: 'inspector_name', label: 'Inspector' },
+      { key: 'closeout_stage', label: 'Stage' },
+      { key: 'readiness_score', label: 'Readiness', type: 'progress' },
+      { key: 'blocking_items', label: 'Blocks' },
+      { key: 'status', label: 'Status', type: 'status' }
+    ],
+    detailFields: [
+      { key: 'permit_number', label: 'Permit Number' },
+      { key: 'site_name', label: 'Site Name' },
+      { key: 'inspector_name', label: 'Inspector' },
+      { key: 'closeout_stage', label: 'Closeout Stage' },
+      { key: 'readiness_score', label: 'Readiness Score', type: 'progress' },
+      { key: 'blocking_items', label: 'Blocking Items' },
+      { key: 'priority', label: 'Priority', type: 'severity' },
+      { key: 'status', label: 'Status', type: 'status' },
+      { key: 'next_action', label: 'Next Action', fullWidth: true }
+    ],
+    formFields: [
+      { key: 'permit_number', label: 'Permit Number', required: true },
+      { key: 'site_name', label: 'Site Name', required: true },
+      { key: 'inspector_name', label: 'Inspector', required: true },
+      { key: 'closeout_stage', label: 'Closeout Stage', required: true },
+      { key: 'readiness_score', label: 'Readiness Score', type: 'number' },
+      { key: 'blocking_items', label: 'Blocking Items', type: 'number' },
+      { key: 'priority', label: 'Priority', type: 'select', options: ['critical', 'high', 'medium', 'low'] },
+      { key: 'status', label: 'Status', type: 'select', options: ['ready', 'action_required', 'blocked', 'closed'] },
+      { key: 'next_action', label: 'Next Action', type: 'textarea', fullWidth: true }
+    ]
+  },
+  {
     key: 'inspections',
     path: '/inspections',
     title: 'Site Inspections',

@@ -13,6 +13,11 @@ import Webhooks from './components/Webhooks';
 import CustomViewsPage from './components/CustomViewsPage';
 import { featureConfigs } from './config/features';
 
+import CodexCustomVizFeature from './pages/CodexCustomVizFeature';
+import CodexOperationsFeature from './pages/CodexOperationsFeature';
+
+import TimelineView from './pages/TimelineView';
+
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('user') || 'null'));
@@ -47,6 +52,10 @@ function App() {
         <Sidebar open={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} user={user} onLogout={handleLogout} />
         <main className={`main-content ${sidebarOpen ? '' : 'sidebar-collapsed'}`}>
           <Routes>
+        <Route path="/insights/timeline" element={<TimelineView />} />
+        <Route path="/codex/custom-viz" element={<CodexCustomVizFeature />} />
+        <Route path="/codex/operations" element={<CodexOperationsFeature />} />
+
             <Route path="/" element={<Dashboard token={token} />} />
             {featureConfigs.map(config => (
               <Route

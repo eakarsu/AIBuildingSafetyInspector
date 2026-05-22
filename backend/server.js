@@ -48,6 +48,7 @@ app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/tenants', require('./routes/tenants'));
 app.use('/api/safety-rag', require('./routes/safetyRag'));
 app.use('/api/agents', require('./routes/agents'));
+app.use('/api/permit-closeout-readiness', require('./routes/permitCloseoutReadiness'));
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
