@@ -28,11 +28,11 @@ router.post('/login', async (req, res) => {
 
 router.post('/register', async (req, res) => {
   try {
-    const { email, password, full_name, role } = req.body;
+    const { email, password, full_name } = req.body;
     const hash = await bcrypt.hash(password, 10);
     const result = await pool.query(
       'INSERT INTO users (email, password, full_name, role) VALUES ($1, $2, $3, $4) RETURNING id, email, full_name, role',
-      [email, hash, full_name, role || 'inspector']
+      [email, hash, full_name, 'inspector']
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {

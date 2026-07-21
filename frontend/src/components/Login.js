@@ -22,11 +22,6 @@ export default function Login({ onLogin }) {
     setLoading(false);
   };
 
-  const autoFill = () => {
-    setEmail('admin@safetyfirst.com');
-    setPassword('password123');
-  };
-
   return (
     <div className="login-page">
       <div className="login-container">
@@ -47,9 +42,6 @@ export default function Login({ onLogin }) {
           </div>
           <button type="submit" className="login-btn" disabled={loading}>
             {loading ? 'Signing in...' : 'Sign In'}
-          </button>
-          <button type="button" className="auto-fill-btn" onClick={autoFill}>
-            Quick Login (Demo Credentials)
           </button>
         </form>
       </div>

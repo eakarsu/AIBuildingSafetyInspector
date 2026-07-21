@@ -6,8 +6,12 @@ require('dotenv').config({ path: '../.env' });
 const app = express();
 const PORT = process.env.BACKEND_PORT || 3001;
 
-app.use(cors());
-app.use(express.json());
+const authenticateToken = require('./middleware/auth');
+const { validateRuntime } = require('./config/runtime');
+app.use((req,res,next)=>{res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','no-referrer');res.setHeader('X-Frame-Options','DENY');next();});
+const origins=(process.env.ALLOWED_ORIGINS||'http://localhost:3000').split(',').map(v=>v.trim());
+app.use(cors({origin:(origin,cb)=>!origin||origins.includes(origin)?cb(null,true):cb(new Error('Origin not allowed')),credentials:true}));
+app.use(express.json({limit:'10mb'}));
 
 // Rate limiter for AI endpoints: 20 requests per user per hour
 const aiRateLimiter = rateLimit({
@@ -49,6 +53,7 @@ app.use('/api/tenants', require('./routes/tenants'));
 app.use('/api/safety-rag', require('./routes/safetyRag'));
 app.use('/api/agents', require('./routes/agents'));
 app.use('/api/permit-closeout-readiness', require('./routes/permitCloseoutReadiness'));
+app.use('/api/safety-lifecycle', authenticateToken, require('./routes/safetyLifecycle'));
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
@@ -64,19 +69,7 @@ app.use('/api/wearable-safety-stream', require('./routes/wearableSafetyStream'))
 app.use('/api/consultancy-white-label', require('./routes/consultancyWhiteLabel')); // apply pass 6 — audit custom suggestion
 
 app.use('/api/custom-views', require('./routes/customViews'));
+validateRuntime();
 app.listen(PORT, () => {
   console.log(`Backend server running on port ${PORT}`);
 });
-
-
-// === Batch 01 Gaps & Frontend Mounts ===
-app.use('/api/gap-no-video-cctv-stream-analytics-only-photo-analysis', require('./routes/gap_no_video_cctv_stream_analytics_only_photo_analysis'));
-app.use('/api/gap-no-ai-checklist-generator-from-local-building-code', require('./routes/gap_no_ai_checklist_generator_from_local_building_code'));
-app.use('/api/gap-no-drone-footage-inspection-ingestion', require('./routes/gap_no_drone_footage_inspection_ingestion'));
-app.use('/api/gap-no-ai-training-content-generator-from-incidents', require('./routes/gap_no_ai_training_content_generator_from_incidents'));
-app.use('/api/gap-frontend-pages-folder-is-empty-no-spa-ui-shipped', require('./routes/gap_frontend_pages_folder_is_empty_no_spa_ui_shipped'));
-app.use('/api/gap-notification-routes-exist-but-no-sms-push-delivery', require('./routes/gap_notification_routes_exist_but_no_sms_push_delivery'));
-app.use('/api/gap-no-direct-gc-platform-api-client-procore-plangrid', require('./routes/gap_no_direct_gc_platform_api_client_procore_plangrid'));
-app.use('/api/gap-no-qr-code-site-asset-tagging', require('./routes/gap_no_qr_code_site_asset_tagging'));
-app.use('/api/gap-no-mobile-offline-mode-for-inspectors', require('./routes/gap_no_mobile_offline_mode_for_inspectors'));
-app.use('/api/gap-no-payroll-integrated-certification-expiry-alerts', require('./routes/gap_no_payroll_integrated_certification_expiry_alerts'));
