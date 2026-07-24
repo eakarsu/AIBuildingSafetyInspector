@@ -26,7 +26,6 @@ export default function Analytics({ token }) {
         setLoading(false);
       }
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const downloadInspectionPdf = async () => {
