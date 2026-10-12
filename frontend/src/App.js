@@ -1,3 +1,4 @@
+import AIReportLibrary from "./components/AIReportLibrary";
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
@@ -47,7 +48,7 @@ function App() {
   }
 
   return (
-    <Router>
+    <><AIReportLibrary floating /><Router>
       <div className="app">
         <Sidebar open={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} user={user} onLogout={handleLogout} />
         <main className={`main-content ${sidebarOpen ? '' : 'sidebar-collapsed'}`}>
@@ -73,7 +74,7 @@ function App() {
         </main>
         <ToastContainer position="top-right" theme="dark" />
       </div>
-    </Router>
+    </Router></>
   );
 }
 

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import AIReport from './AIReport';
+import FullFieldPresets from './FullFieldPresets';
 
 const API = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
@@ -13,116 +15,161 @@ const sites = [
   'Data Center Facility'
 ];
 
-function formatAIResponse(text) {
-  if (!text) return null;
+const nativePromptScenarios = [
+  {
+    label: 'High-rise walkthrough',
+    site: 'Skyline Tower Project',
+    reportType: 'Weekly',
+    hazard: 'Tower-crane picks are passing above the north access route while level 18 perimeter work is active. Assess struck-by and fall exposure before the morning shift.',
+    query: 'Prioritize the unresolved scaffold, overhead-load, and housekeeping risks for tomorrow and identify the evidence a supervisor must verify before work resumes.',
+    nearMisses: '7', meetings: '4', observations: '36', reportingRate: '82',
+    equipmentId: 'CR-001',
+    task: 'Install curtain-wall panels from an aerial work platform at level 18',
+    certifications: 'OSHA 30, aerial-lift operator, fall-protection user, qualified rigger',
+    weather: 'Clear morning; southwest wind gusts forecast to reach 28 mph after 14:00',
+    aqi: '42', noise: '91', temperature: '86',
+    incidentType: 'Struck-by falling hand tool', severity: 'major', daysLost: '3', medicalCost: '8500', equipmentDamage: '2400', interventionCost: '12000',
+    contractor: 'Apex Vertical Access LLC',
+    insurance: 'General liability $5M; workers compensation statutory; certificates expire 2027-06-30.',
+    references: 'Two occupied high-rise projects completed in New York; contacts and closeout letters supplied.',
+    incidents: 'One 2025 dropped-object near miss; corrective tool-tether program documented and verified.',
+    scope: 'Curtain-wall installation, suspended access, rigging, and perimeter protection on levels 16-22.',
+    photoLocation: 'Level 18 east perimeter',
+    photoDescription: 'Four workers near an open edge; three have tied-off harnesses, one lanyard appears slack, loose hand tools are on a cart, and the access aisle is partly blocked by packaging.',
+    bulletinPeriod: 'weekly',
+    jhaTask: 'Set and fasten a 900-pound curtain-wall panel from a boom lift beside an open edge', crew: '5', jhaEquipment: 'JLG 860SJ, panel vacuum lifter, tag lines, PFAS, tool tethers',
+    lotoEquipment: 'Liebherr tower crane CR-001 with 480V electrical cabinet, hydraulic slew drive, and suspended hook block',
+    lotoEnergy: '480V electrical, hydraulic pressure, gravity, stored mechanical rotation',
+    lotoScope: 'Replace the boom-hoist hydraulic seal and inspect the electrical cabinet',
+    fallWork: 'Install curtain-wall anchors and sealant from level 18 where permanent guardrails are incomplete', height: '182', anchors: 'Engineered 5,000-pound roof anchors with self-retracting lifelines',
+    heatIndex: '94', humidity: '58', intensity: 'heavy',
+    topic: 'Dropped-object prevention and tool tethering', duration: '12', audience: 'Curtain-wall installers, riggers, and crane crew'
+  },
+  {
+    label: 'Hospital excavation',
+    site: 'Metro Hospital Wing B',
+    reportType: 'Monthly',
+    hazard: 'A utility trench is being reopened after rain beside an occupied hospital loading route. Assess cave-in, water accumulation, access, traffic, and infection-control risks.',
+    query: 'Create a review checklist for safely reopening the east utility trench, separating observed seed data from assumptions and naming required competent-person approvals.',
+    nearMisses: '3', meetings: '6', observations: '48', reportingRate: '91',
+    equipmentId: 'EX-002',
+    task: 'Excavate and install a chilled-water line in the east utility trench beside the active loading dock',
+    certifications: 'OSHA 30, excavation competent person, confined-space awareness, flagger',
+    weather: 'Overnight rain ending at 06:00; standing water possible; winds below 10 mph',
+    aqi: '37', noise: '88', temperature: '72',
+    incidentType: 'Partial trench wall collapse', severity: 'critical', daysLost: '14', medicalCost: '42000', equipmentDamage: '18000', interventionCost: '26500',
+    contractor: 'Lakefront Civil & Utility Inc.',
+    insurance: 'General liability $10M; workers compensation statutory; pollution liability $2M; coverage confirmed through 2027-09-01.',
+    references: 'Three hospital utility projects; owner references and competent-person resumes supplied.',
+    incidents: 'One 2024 trench-box positioning incident with documented retraining and no recurrence in the supplied record.',
+    scope: 'Type B soil excavation, trench shielding, dewatering, chilled-water pipe placement, backfill, and traffic control.',
+    photoLocation: 'East utility trench at loading dock',
+    photoDescription: 'A six-foot trench contains a trench box and ladder; water is pooled at the south end, spoil is close to the edge, a delivery truck is approaching, and two workers are inside wearing high-visibility vests.',
+    bulletinPeriod: 'monthly',
+    jhaTask: 'Dewater and enter a six-foot Type B soil trench to connect chilled-water piping', crew: '6', jhaEquipment: 'CAT 320F excavator EX-002, trench box, pump, ladder, gas monitor, traffic barriers',
+    lotoEquipment: 'CAT 320F excavator EX-002 with diesel engine, hydraulic boom, bucket, battery, and stored gravity load',
+    lotoEnergy: 'diesel ignition, 24V battery, hydraulic pressure, gravity, stored mechanical energy',
+    lotoScope: 'Replace a hydraulic hose and inspect the boom cylinder before trench work',
+    fallWork: 'Install temporary weather protection above the hospital loading dock from a mobile scaffold', height: '24', anchors: 'Manufacturer-approved scaffold anchors and horizontal lifeline designed by a qualified person',
+    heatIndex: '82', humidity: '66', intensity: 'moderate',
+    topic: 'Excavation competent-person inspections after rain', duration: '10', audience: 'Civil crew, operators, spotters, and hospital logistics staff'
+  },
+  {
+    label: 'Bridge maintenance',
+    site: 'Harbor Bridge Renovation',
+    reportType: 'Incident',
+    hazard: 'Crews will replace corroded members from suspended scaffolds over water during fog and intermittent traffic closures. Assess fall, dropped-object, rescue, and public-interface risks.',
+    query: 'Prepare the decision points for restarting east-span work after the recorded scaffold fall, including independent verification of planking, tie-off, rescue readiness, and traffic controls.',
+    nearMisses: '11', meetings: '5', observations: '29', reportingRate: '74',
+    equipmentId: 'AL-003',
+    task: 'Remove corroded steel and install replacement members from a suspended scaffold over water',
+    certifications: 'OSHA 30, scaffold user, aerial-lift operator, fall-rescue, qualified signal person, hot-work permit',
+    weather: 'Dense morning fog; 18 mph west winds; 40 percent chance of afternoon showers',
+    aqi: '51', noise: '96', temperature: '58',
+    incidentType: 'Fall from scaffold with unattached lanyard', severity: 'critical', daysLost: '28', medicalCost: '68000', equipmentDamage: '9500', interventionCost: '34000',
+    contractor: 'Bay Structural Renewal Partners',
+    insurance: 'General liability $15M; workers compensation statutory; marine and pollution riders; certificates expire 2027-12-31.',
+    references: 'Two state bridge rehabilitation projects with owner contacts, safety statistics, and closeout evaluations supplied.',
+    incidents: 'One 2024 fall and two dropped-object near misses; revised scaffold inspection and tie-off controls submitted for review.',
+    scope: 'Suspended-scaffold access, steel removal, hot work, member replacement, coating, and over-water rescue support.',
+    photoLocation: 'East span suspended scaffold, bay 4',
+    photoDescription: 'Two workers are on a suspended scaffold above water; one lanyard is not connected, a plank appears displaced, fire blankets surround hot work, and tools near the toe board are not tethered.',
+    bulletinPeriod: 'quarterly',
+    jhaTask: 'Remove a corroded bridge member by torch cutting from a suspended scaffold above navigable water', crew: '7', jhaEquipment: 'Suspended scaffold, JLG 860SJ AL-003, oxy-fuel torch, PFAS, rescue boat, fire extinguishers',
+    lotoEquipment: 'JLG 860SJ boom lift AL-003 with diesel engine, hydraulic boom, auxiliary power, and platform controls',
+    lotoEnergy: 'diesel ignition, 12V battery, hydraulic pressure, gravity, stored boom energy',
+    lotoScope: 'Replace the platform-leveling sensor and cracked outrigger pad',
+    fallWork: 'Perform steel replacement and hot work from a suspended scaffold above the harbor', height: '68', anchors: 'Independent engineered lifelines, 5,000-pound anchors, and retrieval lines to the rescue boat',
+    heatIndex: '61', humidity: '84', intensity: 'very heavy',
+    topic: '100-percent tie-off and suspended-scaffold rescue', duration: '15', audience: 'Ironworkers, scaffold crew, lift operators, fire watch, and rescue team'
+  }
+];
 
-  const lines = text.split('\n');
-  const elements = [];
-  let inList = false;
-  let listItems = [];
-  let listType = 'ul';
+export const nativePromptPresets = nativePromptScenarios.map((scenario) => ({
+  label: scenario.label,
+  values: {
+    siteAnalysisSite: scenario.site,
+    riskSite: scenario.site,
+    riskDescription: scenario.hazard,
+    complianceSite: scenario.site,
+    reportSite: scenario.site,
+    reportType: scenario.reportType,
+    customQuery: scenario.query,
+    customSite: scenario.site,
+    cultureSite: scenario.site,
+    cultureNearMisses: scenario.nearMisses,
+    cultureMeetings: scenario.meetings,
+    cultureObs: scenario.observations,
+    cultureRate: scenario.reportingRate,
+    eqId: scenario.equipmentId,
+    compTask: scenario.task,
+    compSite: scenario.site,
+    compRequired: scenario.certifications,
+    envSite: scenario.site,
+    envWeather: scenario.weather,
+    envAQI: scenario.aqi,
+    envNoise: scenario.noise,
+    envTemp: scenario.temperature,
+    costType: scenario.incidentType,
+    costSeverity: scenario.severity,
+    costDays: scenario.daysLost,
+    costMedical: scenario.medicalCost,
+    costEquipment: scenario.equipmentDamage,
+    costIntervention: scenario.interventionCost,
+    vetName: scenario.contractor,
+    vetInsurance: scenario.insurance,
+    vetReferences: scenario.references,
+    vetIncidents: scenario.incidents,
+    vetScope: scenario.scope,
+    photoDesc: scenario.photoDescription,
+    photoSite: scenario.site,
+    photoLocation: scenario.photoLocation,
+    bulletinPeriod: scenario.bulletinPeriod,
+    bulletinSite: scenario.site,
+    jhaTask: scenario.jhaTask,
+    jhaSite: scenario.site,
+    jhaCrew: scenario.crew,
+    jhaEquipment: scenario.jhaEquipment,
+    lotoEquipment: scenario.lotoEquipment,
+    lotoEnergy: scenario.lotoEnergy,
+    lotoSite: scenario.site,
+    lotoScope: scenario.lotoScope,
+    fallWork: scenario.fallWork,
+    fallHeight: scenario.height,
+    fallSite: scenario.site,
+    fallAnchors: scenario.anchors,
+    heatSite: scenario.site,
+    heatIndex: scenario.heatIndex,
+    heatHumidity: scenario.humidity,
+    heatIntensity: scenario.intensity,
+    tbtTopic: scenario.topic,
+    tbtDuration: scenario.duration,
+    tbtAudience: scenario.audience,
+    tbtSite: scenario.site
+  }
+}));
 
-  const flushList = () => {
-    if (listItems.length > 0) {
-      const ListTag = listType;
-      elements.push(
-        <ListTag key={`list-${elements.length}`}>
-          {listItems.map((item, i) => <li key={i} dangerouslySetInnerHTML={{ __html: formatInline(item) }} />)}
-        </ListTag>
-      );
-      listItems = [];
-      inList = false;
-    }
-  };
-
-  const formatInline = (text) => {
-    return text
-      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.+?)\*/g, '<em>$1</em>')
-      .replace(/`(.+?)`/g, '<code style="background:rgba(59,130,246,0.1);padding:2px 6px;border-radius:4px;color:#60a5fa;font-size:13px">$1</code>');
-  };
-
-  lines.forEach((line, idx) => {
-    const trimmed = line.trim();
-
-    if (!trimmed) {
-      flushList();
-      return;
-    }
-
-    // Headers
-    if (trimmed.startsWith('### ')) {
-      flushList();
-      elements.push(<h3 key={idx}>{trimmed.slice(4)}</h3>);
-      return;
-    }
-    if (trimmed.startsWith('## ')) {
-      flushList();
-      elements.push(<h2 key={idx}>{trimmed.slice(3)}</h2>);
-      return;
-    }
-    if (trimmed.startsWith('# ')) {
-      flushList();
-      elements.push(<h1 key={idx}>{trimmed.slice(2)}</h1>);
-      return;
-    }
-
-    // Horizontal rule
-    if (trimmed === '---' || trimmed === '***') {
-      flushList();
-      elements.push(<hr key={idx} style={{ border: 'none', borderTop: '1px solid rgba(148,163,184,0.15)', margin: '16px 0' }} />);
-      return;
-    }
-
-    // Numbered list
-    if (/^\d+[\.\)]\s/.test(trimmed)) {
-      if (!inList || listType !== 'ol') {
-        flushList();
-        listType = 'ol';
-      }
-      inList = true;
-      listItems.push(trimmed.replace(/^\d+[\.\)]\s/, ''));
-      return;
-    }
-
-    // Bullet list
-    if (trimmed.startsWith('- ') || trimmed.startsWith('• ') || trimmed.startsWith('* ')) {
-      if (!inList || listType !== 'ul') {
-        flushList();
-        listType = 'ul';
-      }
-      inList = true;
-      listItems.push(trimmed.slice(2));
-      return;
-    }
-
-    flushList();
-
-    // Sections with special styling
-    if (trimmed.toLowerCase().includes('warning') || trimmed.toLowerCase().includes('critical') || trimmed.toLowerCase().includes('danger')) {
-      elements.push(
-        <div key={idx} className="ai-section danger">
-          <p dangerouslySetInnerHTML={{ __html: formatInline(trimmed) }} />
-        </div>
-      );
-      return;
-    }
-
-    if (trimmed.toLowerCase().includes('recommendation') || trimmed.toLowerCase().includes('action item')) {
-      elements.push(
-        <div key={idx} className="ai-section success">
-          <p dangerouslySetInnerHTML={{ __html: formatInline(trimmed) }} />
-        </div>
-      );
-      return;
-    }
-
-    elements.push(<p key={idx} dangerouslySetInnerHTML={{ __html: formatInline(trimmed) }} />);
-  });
-
-  flushList();
-  return elements;
-}
+export const nativePromptFieldKeys = Object.keys(nativePromptPresets[0].values);
 
 export default function AIAnalysis({ token, user }) {
   const [analyses, setAnalyses] = useState([]);
@@ -206,6 +253,72 @@ export default function AIAnalysis({ token, user }) {
   const [tbtAudience, setTbtAudience] = useState('');
   const [tbtSite, setTbtSite] = useState('');
 
+  const applyNativePromptPreset = (values) => {
+    const setters = {
+      siteAnalysisSite: setSiteAnalysisSite,
+      riskSite: setRiskSite,
+      riskDescription: setRiskDescription,
+      complianceSite: setComplianceSite,
+      reportSite: setReportSite,
+      reportType: setReportType,
+      customQuery: setCustomQuery,
+      customSite: setCustomSite,
+      cultureSite: setCultureSite,
+      cultureNearMisses: setCultureNearMisses,
+      cultureMeetings: setCultureMeetings,
+      cultureObs: setCultureObs,
+      cultureRate: setCultureRate,
+      eqId: setEqId,
+      compTask: setCompTask,
+      compSite: setCompSite,
+      compRequired: setCompRequired,
+      envSite: setEnvSite,
+      envWeather: setEnvWeather,
+      envAQI: setEnvAQI,
+      envNoise: setEnvNoise,
+      envTemp: setEnvTemp,
+      costType: setCostType,
+      costSeverity: setCostSeverity,
+      costDays: setCostDays,
+      costMedical: setCostMedical,
+      costEquipment: setCostEquipment,
+      costIntervention: setCostIntervention,
+      vetName: setVetName,
+      vetInsurance: setVetInsurance,
+      vetReferences: setVetReferences,
+      vetIncidents: setVetIncidents,
+      vetScope: setVetScope,
+      photoDesc: setPhotoDesc,
+      photoSite: setPhotoSite,
+      photoLocation: setPhotoLocation,
+      bulletinPeriod: setBulletinPeriod,
+      bulletinSite: setBulletinSite,
+      jhaTask: setJhaTask,
+      jhaSite: setJhaSite,
+      jhaCrew: setJhaCrew,
+      jhaEquipment: setJhaEquipment,
+      lotoEquipment: setLotoEquipment,
+      lotoEnergy: setLotoEnergy,
+      lotoSite: setLotoSite,
+      lotoScope: setLotoScope,
+      fallWork: setFallWork,
+      fallHeight: setFallHeight,
+      fallSite: setFallSite,
+      fallAnchors: setFallAnchors,
+      heatSite: setHeatSite,
+      heatIndex: setHeatIndex,
+      heatHumidity: setHeatHumidity,
+      heatIntensity: setHeatIntensity,
+      tbtTopic: setTbtTopic,
+      tbtDuration: setTbtDuration,
+      tbtAudience: setTbtAudience,
+      tbtSite: setTbtSite
+    };
+    nativePromptFieldKeys.forEach((key) => setters[key](values[key]));
+    setActiveResponse(null);
+    toast.info('Complete example loaded into every AI tool field. Review it before running a tool.');
+  };
+
   const headers = { Authorization: `Bearer ${token}` };
 
   useEffect(() => {
@@ -263,6 +376,16 @@ export default function AIAnalysis({ token, user }) {
       <div className="page-header">
         <h1>🤖 AI Safety Analysis</h1>
         <p>Powered by OpenRouter - Intelligent construction safety insights</p>
+      </div>
+
+      <div className="native-ai-presets">
+        <FullFieldPresets
+          value={{}}
+          presets={nativePromptPresets}
+          disabled={loading}
+          onChange={applyNativePromptPreset}
+        />
+        <p className="native-ai-preset-note">Each scenario fills all {nativePromptFieldKeys.length} editable fields across the 18 input-driven AI tools below, including optional site context and planning details.</p>
       </div>
 
       <div className="ai-tools-grid">
@@ -588,23 +711,14 @@ export default function AIAnalysis({ token, user }) {
         </div>
       )}
 
-      {/* Active Response */}
+      {/* Returned and history-selected results share the same structured renderer. */}
       {activeResponse && !loading && (
-        <div className="ai-response">
-          <div className="ai-response-header">
-            <h3>
-              <span style={{ fontSize: 24 }}>🤖</span>
-              {activeResponse.title}
-            </h3>
-            <div className="ai-response-meta">
-              <span>Model: {activeResponse.model_used}</span>
-              <span>Type: {activeResponse.analysis_type?.replace(/_/g, ' ')}</span>
-              <span>{new Date(activeResponse.created_at).toLocaleString()}</span>
-            </div>
-          </div>
-          <div className="ai-response-body">
-            {formatAIResponse(activeResponse.ai_response)}
-          </div>
+        <div className="native-ai-report">
+          <AIReport
+            response={activeResponse}
+            title={activeResponse.title || 'AI safety analysis'}
+            model={activeResponse.model_used}
+          />
         </div>
       )}
 

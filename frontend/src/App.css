@@ -158,13 +158,18 @@ body {
   border-radius: 10px;
   font-size: 13px;
   cursor: pointer;
-  margin-top: 12px;
+  margin: 0 0 12px;
   transition: all 0.2s;
   font-family: 'Inter', sans-serif;
 }
 
-.auto-fill-btn:hover {
+.auto-fill-btn:hover:not(:disabled) {
   background: rgba(59, 130, 246, 0.2);
+}
+
+.auto-fill-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .login-error {
@@ -848,6 +853,39 @@ body {
 /* AI Analysis */
 .ai-page {
   max-width: 1200px;
+}
+
+.native-ai-presets,
+.native-ai-report {
+  --bg-card: #1e293b;
+  --bg-input: #0f172a;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #94a3b8;
+  --border-color: rgba(148, 163, 184, 0.18);
+  --accent-primary: #3b82f6;
+  --accent-secondary: #60a5fa;
+}
+
+.native-ai-presets .ai-preset-bar {
+  background: #1e293b;
+  border-color: rgba(148, 163, 184, 0.18);
+  margin-bottom: 8px;
+}
+
+.native-ai-presets .ai-preset-bar strong {
+  color: #f1f5f9;
+}
+
+.native-ai-preset-note {
+  color: #94a3b8;
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 0 0 24px;
+}
+
+.native-ai-report .ai-report {
+  margin-top: 24px;
 }
 
 .ai-tools-grid {
