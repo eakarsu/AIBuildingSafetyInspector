@@ -1,0 +1,8 @@
+'use strict';
+const test=require('node:test'); const assert=require('node:assert/strict');
+const W=require('../domain/wave28c');
+const rows=[{site_name:'Site A',inspection_type:'fire',overall_rating:'failed',status:'open'},{site_name:'Site B',inspection_type:'structural',overall_rating:'passed',status:'closed'}];
+test('tasks validate, create, list-filter and update',()=>{ const s=W.createTaskStore(); assert.throws(()=>s.create('u1',{title:''}),/required/); const t=s.create('u1',{title:' Follow up ',status:'todo'}); assert.equal(s.update('u1',t.id,{status:'done'}).status,'done'); assert.equal(s.list('u1',{status:'done'}).length,1); assert.equal(s.list('u2',{}).length,0); assert.equal(s.update('u1','missing',{title:'x'}),null); });
+test('search/filter and CSV export preserve 0/false',()=>{ assert.equal(W.filterRecords(rows,{search:'site a'}).length,1); const csv=W.toCsv([{name:'a,b',n:0,ok:false}]); assert.ok(csv.includes('"a,b"')); assert.ok(csv.includes(',0,false')); assert.equal(W.formatValue(0),'0'); assert.equal(W.formatValue(false),'false'); assert.equal(W.formatValue(''),'(empty)'); });
+test('provider gate and labelled fallbacks preserve values',()=>{ assert.equal(W.hasProviderKey({}),false); assert.equal(W.hasProviderKey({OPENAI_API_KEY:'k'}),true); assert.equal(W.hasProviderKey({OPENROUTER_API_KEY:'your_openrouter_api_key_here'}),false); for(const fn of Object.values(W.FEATURES)){ const r=fn(rows); assert.equal(r.aiGenerated,false); assert.equal(r.source,'deterministic-fallback'); assert.ok(r.sections.length>=3); } assert.equal(Object.values(W.FEATURES)[0]([]).sections[0].value,0); });
+test('buildSections preserves false/0/empty',()=>{ const s=W.buildSections({a:0,b:false,c:''}); assert.deepEqual(s.map(x=>x.value),[0,false,'']); });

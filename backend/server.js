@@ -71,6 +71,7 @@ app.use('/api/consultancy-white-label', require('./routes/consultancyWhiteLabel'
 app.use('/api/custom-views', require('./routes/customViews'));
 validateRuntime();
 
+app.use('/api/wave28c', authenticateToken, require('./routes/wave28c'));
 // Advisory AI reports only; native execution and approval routes stay unchanged.
 const aiWorkspaceSupport = require("./aiWorkspaceAdapters.cjs");
 const aiWorkspaceDatabase = require("./db.js");
